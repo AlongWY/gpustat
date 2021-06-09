@@ -1,6 +1,7 @@
 extern crate nvml_wrapper as nvml;
+
 use clap::Clap;
-use comfy_table::{Cell, Color, ContentArrangement, Table};
+use comfy_table::{Cell, Color, ContentArrangement, Table, Attribute};
 use nix::unistd::{Uid, User};
 use nvml::enum_wrappers::device::TemperatureSensor;
 use nvml::enums::device::UsedGpuMemory;
@@ -83,17 +84,25 @@ fn main() -> Result<(), NvmlError> {
             process_info.push(format!("{}({})", info, used));
         }
 
+        let temperature = device.temperature(TemperatureSensor::Gpu)?; // 50
+        let utilization_rates = device.utilization_rates()?.gpu; // 30
+
+        let temperature_cell = Cell::new(format!("{}'C", temperature))
+            .fg(Color::Red);
+        let utilization_rates_cell = Cell::new(format!("{} %", utilization_rates))
+            .fg(Color::Green);
+        let memory_cell = Cell::new(format!(
+            "{} / {} MB",
+            device_memory.used >> 20,
+            device_memory.total >> 20
+        ))
+            .fg(Color::Yellow);
         table.add_row(vec![
             Cell::new(format!("[{}]", index)).fg(Color::DarkCyan),
             Cell::new(device_name).fg(Color::DarkBlue),
-            Cell::new(format!("{}'C", device.temperature(TemperatureSensor::Gpu)?)).fg(Color::Red),
-            Cell::new(format!("{} %", device.utilization_rates()?.gpu)).fg(Color::Green),
-            Cell::new(format!(
-                "{} / {} MB",
-                device_memory.used >> 20,
-                device_memory.total >> 20
-            ))
-                .fg(Color::Yellow),
+            if temperature <= 50 { temperature_cell } else { temperature_cell.add_attribute(Attribute::Bold) },
+            if utilization_rates <= 30 { utilization_rates_cell } else { utilization_rates_cell.add_attribute(Attribute::Bold) },
+            if device_memory.used <= 50 { memory_cell } else { memory_cell.add_attribute(Attribute::Bold) },
             Cell::new(process_info.join(",")).fg(Color::DarkYellow),
         ]);
     }

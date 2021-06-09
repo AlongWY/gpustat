@@ -64,7 +64,7 @@ fn main() -> Result<(), NvmlError> {
             let used = match device_process.used_gpu_memory {
                 UsedGpuMemory::Unavailable => String::from("Unavailable"),
                 UsedGpuMemory::Used(m) => {
-                    format!("{}MB", m >> 20)
+                    format!("{}M", m >> 20)
                 }
             };
 
@@ -89,7 +89,7 @@ fn main() -> Result<(), NvmlError> {
             Cell::new(format!("{}'C", device.temperature(TemperatureSensor::Gpu)?)).fg(Color::Red),
             Cell::new(format!("{} %", device.utilization_rates()?.gpu)).fg(Color::Green),
             Cell::new(format!(
-                "{}MB / {}MB",
+                "{} / {} MB",
                 device_memory.used >> 20,
                 device_memory.total >> 20
             ))

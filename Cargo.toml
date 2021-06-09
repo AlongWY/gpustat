@@ -3,6 +3,7 @@ name = "gpustat"
 version = "0.1.0"
 authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
 edition = "2018"
+license = "GPL-2.0"
 
 [dependencies]
 nix = "0.21"

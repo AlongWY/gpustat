@@ -1,6 +1,6 @@
 [package]
 name = "gpustat"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
 edition = "2018"
 license = "GPL-2.0"

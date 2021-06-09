@@ -1,0 +1,12 @@
+[package]
+name = "gpustat"
+version = "0.1.0"
+authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
+edition = "2018"
+
+[dependencies]
+nix = "0.21"
+clap = "3.0.0-beta.2"
+sysinfo = "0.18"
+comfy-table = "2.1.0"
+nvml-wrapper = "0.7.0"

@@ -1,0 +1,7 @@
+sign-commit = true
+no-dev-version = true
+pre-release-replacements = [
+    { file = "CHANGELOG.md", search = "Unreleased", replace = "{{version}}" },
+    { file = "CHANGELOG.md", search = "ReleaseDate", replace = "{{date}}" },
+    { file = "README.md", search = "gpustat_[0-9\\.]+_amd64.deb", replace = "gpustat_{{version}}_amd64.deb" },
+]

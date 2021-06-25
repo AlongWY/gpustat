@@ -1,14 +1,20 @@
 [package]
 name = "gpustat"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
 edition = "2018"
 license = "GPL-2.0"
 description = "A rust-version of gpustat."
+homepage = "https://github.com/AlongWY/gpustat"
+repository = "https://github.com/AlongWY/gpustat"
+keywords = ["shell", "gpustat"]
 
 [dependencies]
 nix = "0.21"
 clap = "3.0.0-beta.2"
+chrono = "0.4"
 sysinfo = "0.18"
+hostname = "^0.3"
+thiserror = "1.0"
 comfy-table = "2.1.0"
 nvml-wrapper = "0.7.0"

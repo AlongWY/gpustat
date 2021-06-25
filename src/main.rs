@@ -1,5 +1,6 @@
 extern crate nvml_wrapper as nvml;
 
+use chrono::prelude::*;
 use clap::Clap;
 use comfy_table::{Cell, Color, ContentArrangement, Table, Attribute};
 use nix::unistd::{Uid, User};
@@ -8,6 +9,19 @@ use nvml::enums::device::UsedGpuMemory;
 use nvml::error::NvmlError;
 use nvml::NVML;
 use sysinfo::{ProcessExt, RefreshKind, System, SystemExt};
+
+use thiserror::Error;
+
+#[non_exhaustive]
+#[derive(Error, Debug)]
+pub enum StatusError {
+    #[error("Failed to parse hostname: {0}")]
+    IoError(#[from] std::io::Error),
+    #[error("Failed to convert string: {0}")]
+    Utf8Error(#[from] std::str::Utf8Error),
+    #[error("Failed to load nvml library: {0}")]
+    NvmlError(#[from] NvmlError),
+}
 
 #[derive(Clap)]
 #[clap(version = "1.0", author = "Feng Yunlong <ylfeng@ir.hit.edu.cn>")]
@@ -32,8 +46,9 @@ struct Opts {
     show_fan: bool,
 }
 
-fn main() -> Result<(), NvmlError> {
+fn main() -> Result<(), StatusError> {
     let opts: Opts = Opts::parse();
+    let localtime: DateTime<Local> = Local::now();
 
     let mut table = Table::new();
 
@@ -107,6 +122,7 @@ fn main() -> Result<(), NvmlError> {
         ]);
     }
 
+    println!("{} {}", hostname::get()?.to_str().unwrap_or_default(), localtime.format("%Y-%m-%d %H:%M:%S").to_string());
     println!("{}", table);
 
     Ok(())

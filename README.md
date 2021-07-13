@@ -22,6 +22,9 @@ Options:
 * `-f`, `--show-full-cmd`   : Display full command and cpu stats of running process
 * `-p`, `--show-pid`   : Display PID of the process
 * `-F`, `--show-fan`   : Display GPU fan speed
+* `-e`, `--show-codec` : Display encoder and/or decoder utilization
+* `-a`, `--show-all`   : Display all gpu properties above
+
 
 Quick Installation
 ------------------

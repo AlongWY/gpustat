@@ -12,3 +12,7 @@ Changelog for `gpustat`
 - Add fan speed
 - Remove unused user option
 - Update dependencies
+
+## v0.1.4
+
+- Optimizing Binary Size

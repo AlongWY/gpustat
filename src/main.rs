@@ -24,7 +24,7 @@ pub enum StatusError {
 }
 
 #[derive(Clap)]
-#[clap(version = "0.1.3", author = "Feng Yunlong <ylfeng@ir.hit.edu.cn>")]
+#[clap(version = "0.1.4", author = "Feng Yunlong <ylfeng@ir.hit.edu.cn>")]
 struct Opts {
     #[clap(long, about = "Force colored output (even when stdout is not a tty)")]
     color: bool,

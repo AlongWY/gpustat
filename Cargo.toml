@@ -1,6 +1,6 @@
 [package]
 name = "gpustat"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
 edition = "2018"
 license = "GPL-2.0"
@@ -9,11 +9,18 @@ homepage = "https://github.com/AlongWY/gpustat"
 repository = "https://github.com/AlongWY/gpustat"
 keywords = ["shell", "gpustat"]
 
+[profile.release]
+lto = true
+opt-level = 3
+panic = 'abort'
+codegen-units = 1
+
+
 [dependencies]
 nix = "0.22"
-clap = "3.0.0-beta.2"
-chrono = "0.4"
-sysinfo = "0.19"
+clap = { version = "3.0.0-beta.2", default-features = false, features = ["std", "derive"] }
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+sysinfo = { version = "0.19", default-features = false }
 hostname = "^0.3"
 thiserror = "1.0"
 comfy-table = "4"

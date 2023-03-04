@@ -97,7 +97,7 @@ fn main() -> Result<(), StatusError> {
             };
 
             let info = {
-                let mut s = String::from(user.name);
+                let mut s = user.name;
                 if opts.show_full_cmd || opts.show_all {
                     s = s + ":" + &process.cmd().join(" ");
                 } else if opts.show_cmd {
@@ -180,7 +180,7 @@ fn main() -> Result<(), StatusError> {
     println!(
         "{}\t{}\t{}",
         hostname::get()?.to_str().unwrap_or_default(),
-        localtime.format("%Y-%m-%d %H:%M:%S").to_string(),
+        localtime.format("%Y-%m-%d %H:%M:%S"),
         nvml.sys_driver_version()?
     );
     println!("{}", table);

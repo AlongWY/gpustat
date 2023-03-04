@@ -1,14 +1,9 @@
-extern crate nvml_wrapper as nvml;
-
 use chrono::prelude::*;
-use clap::Clap;
+use clap::Parser;
+use nix::{libc::uid_t, unistd::{Uid, User}};
 use comfy_table::{Attribute, Cell, Color, ContentArrangement, Table};
-use nix::unistd::{Uid, User};
-use nvml::enum_wrappers::device::TemperatureSensor;
-use nvml::enums::device::UsedGpuMemory;
-use nvml::error::NvmlError;
-use nvml::NVML;
-use sysinfo::{ProcessExt, RefreshKind, System, SystemExt};
+use nvml_wrapper::{Nvml, enums::device::UsedGpuMemory, enum_wrappers::device::TemperatureSensor};
+use sysinfo::{Pid, PidExt, ProcessExt, ProcessRefreshKind, RefreshKind, System, SystemExt};
 
 use thiserror::Error;
 
@@ -20,37 +15,31 @@ pub enum StatusError {
     #[error("Failed to convert string: {0}")]
     Utf8Error(#[from] std::str::Utf8Error),
     #[error("Failed to load nvml library: {0}")]
-    NvmlError(#[from] NvmlError),
+    NvmlError(#[from] nvml_wrapper::error::NvmlError),
+    #[error("Failed to call nix call: {0}")]
+    NixError(#[from] nix::Error),
 }
 
-#[derive(Clap)]
+#[derive(Parser, Debug)]
 #[clap(version = "0.1.4", author = "Feng Yunlong <ylfeng@ir.hit.edu.cn>")]
 struct Opts {
-    #[clap(long, about = "Force colored output (even when stdout is not a tty)")]
+    #[clap(long, help = "Force colored output (even when stdout is not a tty)")]
     color: bool,
-    #[clap(long, about = "Suppress colored output")]
+    #[clap(long, help = "Suppress colored output")]
     no_color: bool,
     // #[clap(short = 'u', long, about = "Display username of the process owner")]
     // show_user: bool,
-    #[clap(short = 'c', long, about = "Display the process name")]
+    #[clap(short = 'c', long, help = "Display the process name")]
     show_cmd: bool,
-    #[clap(
-        short = 'f',
-        long,
-        about = "Display full command and cpu stats of running process"
-    )]
+    #[clap(short = 'f', long, help = "Display full command and cpu stats of running process")]
     show_full_cmd: bool,
-    #[clap(short = 'p', long, about = "Display PID of the process")]
+    #[clap(short = 'p', long, help = "Display PID of the process")]
     show_pid: bool,
-    #[clap(short = 'F', long, about = "Display GPU fan speed")]
+    #[clap(short = 'F', long, help = "Display GPU fan speed")]
     show_fan: bool,
-    #[clap(
-        short = 'e',
-        long,
-        about = "Display encoder and/or decoder utilization"
-    )]
+    #[clap(short = 'e', long, help = "Display encoder and/or decoder utilization")]
     show_codec: bool,
-    #[clap(short = 'a', long, about = "Display all gpu properties above")]
+    #[clap(short = 'a', long, help = "Display all gpu properties above")]
     show_all: bool,
 }
 
@@ -81,10 +70,13 @@ fn main() -> Result<(), StatusError> {
         table.enforce_styling();
     }
 
-    let nvml = NVML::init()?;
+    let nvml = Nvml::init()?;
     let device_num = nvml.device_count()?;
 
-    let system = System::new_with_specifics(RefreshKind::new().with_processes());
+    let system = System::new_with_specifics(RefreshKind::new()
+        .with_processes(ProcessRefreshKind::new().with_user())
+        .with_users_list()
+    );
 
     for index in 0..device_num {
         let device = nvml.device_by_index(index)?;
@@ -94,8 +86,9 @@ fn main() -> Result<(), StatusError> {
 
         let mut process_info = vec![];
         for device_process in device_processes {
-            let process = system.process(device_process.pid as i32).unwrap();
-            let user = User::from_uid(Uid::from_raw(process.uid)).unwrap().unwrap();
+            let process = system.process(Pid::from_u32(device_process.pid)).unwrap();
+            let user_id = process.user_id().expect("Unable to get UID!");
+            let user = User::from_uid(Uid::from(user_id.trailing_ones() as uid_t))?.unwrap();
             let used = match device_process.used_gpu_memory {
                 UsedGpuMemory::Unavailable => String::from("Unavailable"),
                 UsedGpuMemory::Used(m) => {

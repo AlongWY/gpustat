@@ -1,6 +1,6 @@
 [package]
 name = "gpustat"
-version = "0.1.4"
+version = "0.1.5"
 authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
 edition = "2018"
 license = "GPL-2.0"
@@ -17,11 +17,11 @@ codegen-units = 1
 
 
 [dependencies]
-nix = "0.22"
-clap = { version = "3.0.0-beta.2", default-features = false, features = ["std", "derive"] }
+nix = "0.26"
+clap = { version = "4", default-features = false, features = ["std", "derive"] }
 chrono = { version = "0.4", default-features = false, features = ["clock"] }
-sysinfo = { version = "0.19", default-features = false }
+sysinfo = { version = "0.28", default-features = false }
 hostname = "^0.3"
 thiserror = "1.0"
-comfy-table = "4"
-nvml-wrapper = "0.7.0"
+comfy-table = "6"
+nvml-wrapper = "0.9"

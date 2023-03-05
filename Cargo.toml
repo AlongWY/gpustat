@@ -1,6 +1,6 @@
 [package]
 name = "gpustat"
-version = "0.1.5"
+version = "0.1.6"
 authors = ["ylfeng <ylfeng@ir.hit.edu.cn>"]
 edition = "2018"
 license = "GPL-2.0"
@@ -24,4 +24,7 @@ sysinfo = { version = "0.28", default-features = false }
 hostname = "^0.3"
 thiserror = "1.0"
 comfy-table = "6"
-nvml-wrapper = "0.9"
+nvml-wrapper = { version = "0.9", default-features = false }
+
+[features]
+legacy-functions = ["nvml-wrapper/legacy-functions"]

@@ -1,10 +1,9 @@
 use chrono::prelude::*;
 use clap::Parser;
-use nix::{libc::uid_t, unistd::{Uid, User}};
 use comfy_table::{Attribute, Cell, Color, ContentArrangement, Table};
-use nvml_wrapper::{Nvml, enums::device::UsedGpuMemory, enum_wrappers::device::TemperatureSensor};
+use nix::{libc::uid_t, unistd::{Uid, User}};
+use nvml_wrapper::{enum_wrappers::device::TemperatureSensor, enums::device::UsedGpuMemory, Nvml};
 use sysinfo::{Pid, PidExt, ProcessExt, ProcessRefreshKind, RefreshKind, System, SystemExt};
-
 use thiserror::Error;
 
 #[non_exhaustive]
@@ -21,25 +20,25 @@ pub enum StatusError {
 }
 
 #[derive(Parser, Debug)]
-#[clap(version = "0.1.4", author = "Feng Yunlong <ylfeng@ir.hit.edu.cn>")]
+#[command(author, version, about)]
 struct Opts {
-    #[clap(long, help = "Force colored output (even when stdout is not a tty)")]
+    #[arg(long, help = "Force colored output (even when stdout is not a tty)")]
     color: bool,
-    #[clap(long, help = "Suppress colored output")]
+    #[arg(long, help = "Suppress colored output")]
     no_color: bool,
     // #[clap(short = 'u', long, about = "Display username of the process owner")]
     // show_user: bool,
-    #[clap(short = 'c', long, help = "Display the process name")]
+    #[arg(short = 'c', long, help = "Display the process name")]
     show_cmd: bool,
-    #[clap(short = 'f', long, help = "Display full command and cpu stats of running process")]
+    #[arg(short = 'f', long, help = "Display full command and cpu stats of running process")]
     show_full_cmd: bool,
-    #[clap(short = 'p', long, help = "Display PID of the process")]
+    #[arg(short = 'p', long, help = "Display PID of the process")]
     show_pid: bool,
-    #[clap(short = 'F', long, help = "Display GPU fan speed")]
+    #[arg(short = 'F', long, help = "Display GPU fan speed")]
     show_fan: bool,
-    #[clap(short = 'e', long, help = "Display encoder and/or decoder utilization")]
+    #[arg(short = 'e', long, help = "Display encoder and/or decoder utilization")]
     show_codec: bool,
-    #[clap(short = 'a', long, help = "Display all gpu properties above")]
+    #[arg(short = 'a', long, help = "Display all gpu properties above")]
     show_all: bool,
 }
 

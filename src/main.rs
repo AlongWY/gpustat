@@ -1,7 +1,7 @@
 use chrono::prelude::*;
 use clap::Parser;
 use comfy_table::{Attribute, Cell, Color, ContentArrangement, Table};
-use nix::{libc::uid_t, unistd::{Uid, User}};
+use nix::{unistd::{Uid, User}};
 use nvml_wrapper::{enum_wrappers::device::TemperatureSensor, enums::device::UsedGpuMemory, Nvml};
 use sysinfo::{Pid, PidExt, ProcessExt, ProcessRefreshKind, RefreshKind, System, SystemExt};
 use thiserror::Error;
@@ -87,7 +87,7 @@ fn main() -> Result<(), StatusError> {
         for device_process in device_processes {
             let process = system.process(Pid::from_u32(device_process.pid)).unwrap();
             let user_id = process.user_id().expect("Unable to get UID!");
-            let user = User::from_uid(Uid::from(user_id.trailing_ones() as uid_t))?.unwrap();
+            let user = User::from_uid(Uid::from(*user_id.to_owned()))?.unwrap();
             let used = match device_process.used_gpu_memory {
                 UsedGpuMemory::Unavailable => String::from("Unavailable"),
                 UsedGpuMemory::Used(m) => {
